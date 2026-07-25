@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { CheckCircle2, Send } from "lucide-react";
-
+import { leadsApi } from "../services/api";
 const budgetOptions = [
   "Under $500",
   "$500–$2,000",
@@ -55,7 +55,7 @@ export default function LeadForm() {
     setErrors((prev) => ({ ...prev, [name]: undefined }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const validationErrors = validate(formData);
     setErrors(validationErrors);
@@ -63,7 +63,17 @@ export default function LeadForm() {
     if (Object.keys(validationErrors).length > 0) return;
 
     // No API yet — this is where the POST /leads call will go.
-    console.log(formData);
+    try {
+  await leadsApi.create(formData);
+
+  setFormData(initialForm);
+  setShowSuccess(true);
+
+  if (timeoutRef.current) clearTimeout(timeoutRef.current);
+  timeoutRef.current = setTimeout(() => setShowSuccess(false), 4000);
+} catch (error) {
+  alert(error.response?.data?.message || "Failed to submit lead.");
+}
 
     setFormData(initialForm);
     setShowSuccess(true);

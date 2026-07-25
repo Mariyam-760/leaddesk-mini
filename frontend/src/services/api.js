@@ -1,31 +1,42 @@
 import axios from "axios";
 
-/**
- * Central Axios instance for LeadDesk Mini.
- *
- * This file only sets up the API layer so the frontend is ready to be
- * wired up to a real backend later. No requests are made from here yet —
- * every screen currently works off local React state.
- */
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || "/api",
+  baseURL: "http://localhost:5000/api",
   headers: {
     "Content-Type": "application/json",
   },
 });
 
-// Placeholder endpoints for future backend integration.
-// Keep these as thin wrappers — no fetching/mutation logic is implemented yet.
-export const leadsApi = {
-  list: () => api.get("/leads"),
-  create: (payload) => api.post("/leads", payload),
-  updateStatus: (id, status) => api.patch(`/leads/${id}`, { status }),
-  remove: (id) => api.delete(`/leads/${id}`),
-};
+// Attach JWT token automatically
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
 
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+
+  return config;
+});
+
+// Authentication APIs
 export const authApi = {
   login: (credentials) => api.post("/auth/login", credentials),
-  logout: () => api.post("/auth/logout"),
+};
+
+// Lead APIs
+export const leadsApi = {
+  // Get all leads
+  list: () => api.get("/leads"),
+
+  // Create a new lead
+  create: (payload) => api.post("/leads", payload),
+
+  // Update lead status
+  updateStatus: (id, status) =>
+    api.patch(`/leads/${id}/status`, { status }),
+
+  // Delete a lead
+  delete: (id) => api.delete(`/leads/${id}`),
 };
 
 export default api;

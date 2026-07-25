@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Zap, Lock, Mail, ArrowLeft } from "lucide-react";
+import { authApi } from "../services/api";
 
 const initialForm = { email: "", password: "" };
 
@@ -30,16 +31,28 @@ export default function AdminLogin() {
     setErrors((prev) => ({ ...prev, [name]: undefined }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const validationErrors = validate(credentials);
-    setErrors(validationErrors);
-    if (Object.keys(validationErrors).length > 0) return;
+  const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    // No auth implementation yet — this is where POST /auth/login will go.
-    console.log(credentials);
+  const validationErrors = validate(credentials);
+  setErrors(validationErrors);
+
+  if (Object.keys(validationErrors).length > 0) return;
+
+  try {
+    const response = await authApi.login(credentials);
+
+    const token = response.data.data.token;
+
+    localStorage.setItem("token", token);
+
     navigate("/admin");
-  };
+  } catch (error) {
+    alert(
+      error.response?.data?.message || "Login failed"
+    );
+  }
+};
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-canvas-sunken px-6 py-12">

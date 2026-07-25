@@ -39,11 +39,11 @@ export default function Topbar({ searchTerm, onSearchChange, onOpenMobileMenu })
 
       <div className="hidden items-center gap-3 sm:flex">
         <div className="text-right">
-          <p className="text-sm font-medium text-ink">Alex Rivera</p>
+          <p className="text-sm font-medium text-ink">Mariyam</p>
           <p className="text-xs text-ink-light">Admin</p>
         </div>
         <span className="flex h-9 w-9 items-center justify-center rounded-full bg-signal text-sm font-semibold text-white">
-          AR
+          M
         </span>
       </div>
     </header>

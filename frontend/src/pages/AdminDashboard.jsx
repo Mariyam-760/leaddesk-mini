@@ -1,13 +1,32 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { Users, Sparkles, Phone, CheckCircle2, X } from "lucide-react";
 import Sidebar from "../components/Sidebar.jsx";
 import Topbar from "../components/Topbar.jsx";
 import StatsCard from "../components/StatsCard.jsx";
 import LeadTable from "../components/LeadTable.jsx";
-import { dummyLeads } from "../data/dummyLeads.js";
+import { leadsApi } from "../services/api";
+
 
 export default function AdminDashboard() {
-  const [leads, setLeads] = useState(dummyLeads);
+  const [leads, setLeads] = useState([]);
+  useEffect(() => {
+  fetchLeads();
+}, []);
+
+const fetchLeads = async () => {
+  try {
+    const response = await leadsApi.list();
+    setLeads(
+  response.data.data.map((lead) => ({
+    ...lead,
+    createdAt: lead.created_at,
+  }))
+);
+  } catch (error) {
+    console.error(error);
+    alert("Unable to load leads.");
+  }
+};
   const [searchTerm, setSearchTerm] = useState("");
   const [activeView, setActiveView] = useState("dashboard");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -30,13 +49,31 @@ export default function AdminDashboard() {
     );
   }, [leads, searchTerm]);
 
-  const handleStatusChange = (id, status) => {
-    setLeads((prev) => prev.map((lead) => (lead.id === id ? { ...lead, status } : lead)));
-  };
+const handleStatusChange = async (id, status) => {
+  try {
+    await leadsApi.updateStatus(id, status);
 
-  const handleDelete = (id) => {
+    setLeads((prev) =>
+      prev.map((lead) =>
+        lead.id === id ? { ...lead, status } : lead
+      )
+    );
+  } catch (error) {
+    alert(
+      error.response?.data?.message ||
+      "Failed to update status."
+    );
+  }
+};
+const handleDelete = async (id) => {
+  try {
+    await leadsApi.delete(id);
+
     setLeads((prev) => prev.filter((lead) => lead.id !== id));
-  };
+  } catch (error) {
+    alert(error.response?.data?.message || "Failed to delete lead.");
+  }
+};
 
   return (
     <div className="flex min-h-screen bg-canvas-sunken">
