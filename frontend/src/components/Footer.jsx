@@ -10,9 +10,14 @@ export default function Footer() {
           </span>
           <span className="font-display text-sm font-semibold">LeadDesk Mini</span>
         </a>
-        <p className="text-sm text-ink-light">
-          Built for Digital Heroes Training Task
-        </p>
+      <a
+  href="https://digitalheroesco.com"
+  target="_blank"
+  rel="noopener noreferrer"
+  className="text-sm text-ink-light hover:underline"
+>
+  Built for Digital Heroes Training Task
+</a>
         <p className="text-sm text-ink-faint">
           © {new Date().getFullYear()} LeadDesk Mini
         </p>
