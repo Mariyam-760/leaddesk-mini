@@ -205,7 +205,7 @@ Tables
 Frontend
 
 ```
-To be added after deployment
+https://leaddesk-mini-lake.vercel.app/
 ```
 
 Backend
@@ -214,17 +214,6 @@ Backend
 https://leaddesk-mini-backend-sh7s.onrender.com/
 ```
 
----
-
-## Demo Video
-
-Loom walkthrough link:
-
-```
-To be added after recording
-```
-
----
 
 ## Author
 
