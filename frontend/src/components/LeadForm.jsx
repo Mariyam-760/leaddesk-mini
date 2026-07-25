@@ -1,6 +1,7 @@
 import { useState, useRef } from "react";
 import { CheckCircle2, Send } from "lucide-react";
 import { leadsApi } from "../services/api";
+
 const budgetOptions = [
   "Under $500",
   "$500–$2,000",
@@ -18,26 +19,43 @@ const initialForm = {
 function validate(form) {
   const errors = {};
 
-  if (!form.name.trim()) {
-    errors.name = "Enter your name.";
-  } else if (form.name.trim().length < 2) {
+  // Name
+  const name = form.name.trim();
+
+  if (!name) {
+    errors.name = "Name is required.";
+  } else if (name.length < 2) {
     errors.name = "Name must be at least 2 characters.";
+  } else if (name.length > 50) {
+    errors.name = "Name cannot exceed 50 characters.";
+  } else if (!/^[A-Za-z\s'-]+$/.test(name)) {
+    errors.name =
+      "Name can only contain letters, spaces, apostrophes and hyphens.";
   }
 
-  if (!form.email.trim()) {
-    errors.email = "Enter your email.";
-  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) {
+  // Email
+  const email = form.email.trim();
+
+  if (!email) {
+    errors.email = "Email is required.";
+  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     errors.email = "Enter a valid email address.";
   }
 
+  // Budget
   if (!form.budget) {
-    errors.budget = "Select a budget range.";
+    errors.budget = "Please select a budget range.";
   }
 
-  if (!form.message.trim()) {
-    errors.message = "Tell us a little about what you need.";
-  } else if (form.message.trim().length < 10) {
-    errors.message = "Message should be at least 10 characters.";
+  // Message
+  const message = form.message.trim();
+
+  if (!message) {
+    errors.message = "Message is required.";
+  } else if (message.length < 10) {
+    errors.message = "Message must be at least 10 characters.";
+  } else if (message.length > 500) {
+    errors.message = "Message cannot exceed 500 characters.";
   }
 
   return errors;
@@ -51,35 +69,42 @@ export default function LeadForm() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-    setErrors((prev) => ({ ...prev, [name]: undefined }));
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+
+    setErrors((prev) => ({
+      ...prev,
+      [name]: undefined,
+    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     const validationErrors = validate(formData);
     setErrors(validationErrors);
 
     if (Object.keys(validationErrors).length > 0) return;
 
-    // No API yet — this is where the POST /leads call will go.
     try {
-  await leadsApi.create(formData);
+      await leadsApi.create(formData);
 
-  setFormData(initialForm);
-  setShowSuccess(true);
+      setFormData(initialForm);
+      setShowSuccess(true);
 
-  if (timeoutRef.current) clearTimeout(timeoutRef.current);
-  timeoutRef.current = setTimeout(() => setShowSuccess(false), 4000);
-} catch (error) {
-  alert(error.response?.data?.message || "Failed to submit lead.");
-}
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
 
-    setFormData(initialForm);
-    setShowSuccess(true);
-
-    if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    timeoutRef.current = setTimeout(() => setShowSuccess(false), 4000);
+      timeoutRef.current = setTimeout(() => {
+        setShowSuccess(false);
+      }, 4000);
+    } catch (error) {
+      alert(error.response?.data?.message || "Failed to submit lead.");
+    }
   };
 
   return (
@@ -87,9 +112,11 @@ export default function LeadForm() {
       <div className="mx-auto max-w-3xl px-6 lg:px-10">
         <div className="text-center">
           <span className="eyebrow">Get started</span>
+
           <h2 className="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">
             Tell us about your team
           </h2>
+
           <p className="mt-3 text-ink-light">
             Share a few details and we'll follow up within one business day.
           </p>
@@ -103,11 +130,16 @@ export default function LeadForm() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} noValidate className="grid gap-5 sm:grid-cols-2">
-            <div className="sm:col-span-1">
+          <form
+            onSubmit={handleSubmit}
+            noValidate
+            className="grid gap-5 sm:grid-cols-2"
+          >
+            <div>
               <label htmlFor="name" className="label-text">
                 Name
               </label>
+
               <input
                 id="name"
                 name="name"
@@ -119,17 +151,22 @@ export default function LeadForm() {
                 aria-invalid={Boolean(errors.name)}
                 aria-describedby={errors.name ? "name-error" : undefined}
               />
+
               {errors.name && (
-                <p id="name-error" className="mt-1.5 text-xs font-medium text-rose">
+                <p
+                  id="name-error"
+                  className="mt-1.5 text-xs font-medium text-rose"
+                >
                   {errors.name}
                 </p>
               )}
             </div>
 
-            <div className="sm:col-span-1">
+            <div>
               <label htmlFor="email" className="label-text">
                 Email
               </label>
+
               <input
                 id="email"
                 name="email"
@@ -141,8 +178,12 @@ export default function LeadForm() {
                 aria-invalid={Boolean(errors.email)}
                 aria-describedby={errors.email ? "email-error" : undefined}
               />
+
               {errors.email && (
-                <p id="email-error" className="mt-1.5 text-xs font-medium text-rose">
+                <p
+                  id="email-error"
+                  className="mt-1.5 text-xs font-medium text-rose"
+                >
                   {errors.email}
                 </p>
               )}
@@ -150,8 +191,9 @@ export default function LeadForm() {
 
             <div className="sm:col-span-2">
               <label htmlFor="budget" className="label-text">
-                Budget range
+                Budget Range
               </label>
+
               <select
                 id="budget"
                 name="budget"
@@ -164,14 +206,19 @@ export default function LeadForm() {
                 <option value="" disabled>
                   Select a budget range
                 </option>
+
                 {budgetOptions.map((option) => (
                   <option key={option} value={option}>
                     {option}
                   </option>
                 ))}
               </select>
+
               {errors.budget && (
-                <p id="budget-error" className="mt-1.5 text-xs font-medium text-rose">
+                <p
+                  id="budget-error"
+                  className="mt-1.5 text-xs font-medium text-rose"
+                >
                   {errors.budget}
                 </p>
               )}
@@ -181,6 +228,7 @@ export default function LeadForm() {
               <label htmlFor="message" className="label-text">
                 Message
               </label>
+
               <textarea
                 id="message"
                 name="message"
@@ -188,19 +236,28 @@ export default function LeadForm() {
                 value={formData.message}
                 onChange={handleChange}
                 placeholder="What are you hoping to solve?"
-                className={`input-field resize-none ${errors.message ? "input-error" : ""}`}
+                className={`input-field resize-none ${
+                  errors.message ? "input-error" : ""
+                }`}
                 aria-invalid={Boolean(errors.message)}
                 aria-describedby={errors.message ? "message-error" : undefined}
               />
+
               {errors.message && (
-                <p id="message-error" className="mt-1.5 text-xs font-medium text-rose">
+                <p
+                  id="message-error"
+                  className="mt-1.5 text-xs font-medium text-rose"
+                >
                   {errors.message}
                 </p>
               )}
             </div>
 
             <div className="sm:col-span-2">
-              <button type="submit" className="btn-primary w-full sm:w-auto">
+              <button
+                type="submit"
+                className="btn-primary w-full sm:w-auto"
+              >
                 Submit
                 <Send size={16} />
               </button>

@@ -1,9 +1,21 @@
 import { ArrowRight, TrendingUp, Users, CircleDot } from "lucide-react";
 
-const feedItems = [
-  { initials: "AR", name: "Ananya Rao", budget: "$2,000–$5,000", status: "New" },
-  { initials: "MW", name: "Marcus Webb", budget: "$500–$2,000", status: "Contacted" },
-  { initials: "PM", name: "Priya Menon", budget: "Above $5,000", status: "Closed" },
+const activityItems = [
+  {
+    title: "New lead received",
+    time: "2 mins ago",
+    color: "bg-blue-500",
+  },
+  {
+    title: "Sales follow-up completed",
+    time: "18 mins ago",
+    color: "bg-amber-500",
+  },
+  {
+    title: "Lead converted successfully",
+    time: "1 hour ago",
+    color: "bg-emerald-500",
+  },
 ];
 
 const statusStyles = {
@@ -103,29 +115,34 @@ export default function Hero() {
             </div>
 
             {/* live feed list */}
-            <div className="mt-5 space-y-2 border-t border-line pt-4">
-              {feedItems.map((item) => (
-                <div
-                  key={item.name}
-                  className="flex items-center justify-between rounded-lg px-2 py-1.5"
-                >
-                  <div className="flex items-center gap-3">
-                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-ink text-xs font-semibold text-white">
-                      {item.initials}
-                    </span>
-                    <div>
-                      <p className="text-sm font-medium text-ink">{item.name}</p>
-                      <p className="text-xs text-ink-light">{item.budget}</p>
-                    </div>
-                  </div>
-                  <span
-                    className={`rounded-full px-2.5 py-1 text-xs font-semibold ${statusStyles[item.status]}`}
-                  >
-                    {item.status}
-                  </span>
-                </div>
-              ))}
-            </div>
+            {/* Recent Activity */}
+
+<div className="mt-5 border-t border-line pt-4">
+  <p className="mb-3 text-sm font-semibold text-ink">
+    Recent Activity
+  </p>
+
+  <div className="space-y-3">
+    {activityItems.map((item) => (
+      <div
+        key={item.title}
+        className="flex items-center gap-3 rounded-lg border border-line p-3"
+      >
+        <div className={`h-3 w-3 rounded-full ${item.color}`} />
+
+        <div className="flex-1">
+          <p className="text-sm font-medium text-ink">
+            {item.title}
+          </p>
+
+          <p className="text-xs text-ink-light">
+            {item.time}
+          </p>
+        </div>
+      </div>
+    ))}
+  </div>
+</div>
           </div>
         </div>
       </div>

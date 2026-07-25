@@ -1,84 +1,53 @@
-import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Menu, X, Zap } from "lucide-react";
 
-const navLinks = [
-  { label: "Home", href: "#top" },
-  { label: "Features", href: "#features" },
-  { label: "Contact", href: "#lead-form" },
-];
-
-export default function Navbar() {
-  const [open, setOpen] = useState(false);
-
+function Navbar() {
   return (
-    <header className="sticky top-0 z-40 border-b border-line bg-canvas/90 backdrop-blur">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-10">
-        <a href="#top" className="flex items-center gap-2">
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-ink text-white">
-            <Zap size={16} strokeWidth={2.5} />
-          </span>
-          <span className="font-display text-lg font-semibold tracking-tight">
-            LeadDesk Mini
-          </span>
-        </a>
+    <header className="fixed top-0 left-0 right-0 z-50 border-b border-gray-200 bg-white/90 backdrop-blur-md">
+      <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
 
+        {/* Logo */}
+        <Link
+          to="/"
+          className="text-2xl font-bold text-slate-900 tracking-tight"
+        >
+          LeadDesk Mini
+        </Link>
+
+        {/* Navigation */}
         <nav className="hidden items-center gap-8 md:flex">
-          {navLinks.map((link) => (
-            <a
-              key={link.label}
-              href={link.href}
-              className="text-sm font-medium text-ink-light transition-colors hover:text-ink"
-            >
-              {link.label}
-            </a>
-          ))}
+          <a
+            href="#home"
+            className="text-sm font-medium text-gray-600 transition hover:text-black"
+          >
+            Home
+          </a>
+
+          <a
+            href="#features"
+            className="text-sm font-medium text-gray-600 transition hover:text-black"
+          >
+            Features
+          </a>
+
+          <a
+            href="#contact"
+            className="text-sm font-medium text-gray-600 transition hover:text-black"
+          >
+            Contact
+          </a>
         </nav>
 
-        <div className="hidden items-center gap-3 md:flex">
-          <Link to="/admin/login" className="text-sm font-medium text-ink-light hover:text-ink">
-            Admin Login
-          </Link>
-          <a href="#lead-form" className="btn-primary">
-            Get Started
-          </a>
-        </div>
-
-        <button
-          className="flex h-9 w-9 items-center justify-center rounded-lg border border-line text-ink md:hidden"
-          onClick={() => setOpen((v) => !v)}
-          aria-label="Toggle navigation menu"
+        {/* CTA */}
+        <a
+          href="#contact"
+          className="rounded-xl bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-700"
         >
-          {open ? <X size={18} /> : <Menu size={18} />}
-        </button>
-      </div>
+          Get Started
+        </a>
 
-      {open && (
-        <div className="border-t border-line bg-canvas px-6 pb-6 pt-2 md:hidden">
-          <nav className="flex flex-col gap-4">
-            {navLinks.map((link) => (
-              <a
-                key={link.label}
-                href={link.href}
-                onClick={() => setOpen(false)}
-                className="text-sm font-medium text-ink-light hover:text-ink"
-              >
-                {link.label}
-              </a>
-            ))}
-            <Link
-              to="/admin/login"
-              onClick={() => setOpen(false)}
-              className="text-sm font-medium text-ink-light hover:text-ink"
-            >
-              Admin Login
-            </Link>
-            <a href="#lead-form" onClick={() => setOpen(false)} className="btn-primary w-full">
-              Get Started
-            </a>
-          </nav>
-        </div>
-      )}
+      </div>
     </header>
   );
 }
+
+export default Navbar;

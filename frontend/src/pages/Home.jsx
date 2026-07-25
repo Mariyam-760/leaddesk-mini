@@ -8,9 +8,19 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-canvas">
       <Navbar />
-      <Hero />
-      <Features />
-      <LeadForm />
+
+      <section id="home">
+        <Hero />
+      </section>
+
+      <section id="features">
+        <Features />
+      </section>
+
+      <section id="contact">
+        <LeadForm />
+      </section>
+
       <Footer />
     </div>
   );

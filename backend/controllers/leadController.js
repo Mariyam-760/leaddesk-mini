@@ -8,28 +8,84 @@ function isValidEmail(email) {
 
 async function createLead(req, res) {
   try {
-    const { name, email, budget, message } = req.body;
+    let { name, email, budget, message } = req.body;
 
-    // ---- Validation ----
-    if (!name || !name.trim()) {
-      return res.status(400).json({ success: false, message: "Name is required." });
+    // Trim values
+    name = name?.trim();
+    email = email?.trim();
+    budget = budget?.trim();
+    message = message?.trim();
+
+    // Name Validation
+    if (!name) {
+      return res.status(400).json({
+        success: false,
+        message: "Name is required.",
+      });
     }
-    if (!email || !isValidEmail(email)) {
-      return res.status(400).json({ success: false, message: "A valid email is required." });
+
+    if (name.length < 2 || name.length > 50) {
+      return res.status(400).json({
+        success: false,
+        message: "Name must be between 2 and 50 characters.",
+      });
     }
-    if (!budget || !budget.trim()) {
-      return res.status(400).json({ success: false, message: "Budget is required." });
+
+    if (!/^[A-Za-z\s'-]+$/.test(name)) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "Name can only contain letters, spaces, apostrophes and hyphens.",
+      });
     }
-    if (!message || !message.trim()) {
-      return res.status(400).json({ success: false, message: "Message is required." });
+
+    // Email Validation
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        message: "Email is required.",
+      });
+    }
+
+    if (!isValidEmail(email)) {
+      return res.status(400).json({
+        success: false,
+        message: "Please enter a valid email address.",
+      });
+    }
+
+    // Budget Validation
+    if (!budget) {
+      return res.status(400).json({
+        success: false,
+        message: "Please select a budget range.",
+      });
+    }
+
+    // Message Validation
+    if (!message) {
+      return res.status(400).json({
+        success: false,
+        message: "Message is required.",
+      });
+    }
+
+    if (message.length < 10 || message.length > 500) {
+      return res.status(400).json({
+        success: false,
+        message: "Message must be between 10 and 500 characters.",
+      });
     }
 
     const [result] = await pool.query(
       "INSERT INTO leads (name, email, budget, message, status) VALUES (?, ?, ?, ?, ?)",
-      [name.trim(), email.trim(), budget.trim(), message.trim(), "New"]
+      [name, email, budget, message, "New"]
     );
 
-    const [rows] = await pool.query("SELECT * FROM leads WHERE id = ?", [result.insertId]);
+    const [rows] = await pool.query(
+      "SELECT * FROM leads WHERE id = ?",
+      [result.insertId]
+    );
 
     return res.status(201).json({
       success: true,
@@ -37,8 +93,12 @@ async function createLead(req, res) {
       data: rows[0],
     });
   } catch (error) {
-    console.error("Create lead error:", error.message);
-    return res.status(500).json({ success: false, message: "Something went wrong on our end." });
+    console.error("Create lead error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Something went wrong on our end.",
+    });
   }
 }
 
